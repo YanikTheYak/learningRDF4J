@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+apply plugin: 'jvm-component'
+apply plugin: 'java-lang'
+
+
+mainClassName = 'hello.HelloWorld'
+
+// tag::repositories[]
+repositories { 
+    mavenCentral() 
+}
+// end::repositories[]
+
+// tag::jar[]
+jar {
+    baseName = 'gs-gradle'
+    version =  '0.1.0'
+}
+// end::jar[]
+
+// tag::dependencies[]
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model
+    compile group: "org.eclipse.rdf4j", name: "rdf4j-model", version: "2.2"
+    compile "org.eclipse.rdf4j:rdf4j:2.2"
+    compile "joda-time:joda-time:2.2"
+    testCompile "junit:junit:4.12"
+}
+// end::dependencies[]
+
+// tag::wrapper[]
+// end::wrapper[]
