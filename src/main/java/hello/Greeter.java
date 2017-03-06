@@ -28,6 +28,9 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
+// example 4
+import org.eclipse.rdf4j.model.vocabulary.DC;
+
 /**
  * RDF Tutorial example 01: Building a simple RDF Model using Eclipse RDF4J
  *
@@ -128,4 +131,61 @@ public class Greeter {
 		}
     return output;
 	}
+
+ public String example04_RDF4J() {
+    String output = "";
+
+
+		ValueFactory vf = SimpleValueFactory.getInstance();
+		
+		// Create a new RDF model containing information about the painting "The Potato Eaters"
+		ModelBuilder builder = new ModelBuilder();
+		Model model = builder
+				.setNamespace("ex", "http://example.org/")
+				.subject("ex:PotatoEaters")
+				// this painting was created on April 1, 1885
+				.add("ex:creationDate", vf.createLiteral("1885-04-01T00:00:00Z", XMLSchema.DATETIME))
+				// You can also pass in a Java Date object directly: 
+					//.add("ex:creationDate", new GregorianCalendar(1885, Calendar.APRIL, 1).getTime())
+				
+				// the painting shows 5 people
+				.add("ex:peopleDepicted", 5)
+
+				// In English, this painting is called "The Potato Eaters"
+				.add(DC.TITLE, vf.createLiteral("The Potato Eaters", "en"))
+				// In Dutch, it's called "De Aardappeleters"
+				.add(DC.TITLE,  vf.createLiteral("De Aardappeleters", "nl"))
+
+				.add(DC.TITLE, vf.createLiteral("Manger Pomme de terre", "fr"))
+						
+				.build();
+
+		// To see what's in our model, let's just print stuff to the screen
+		for(Statement st: model) {
+			// we want to see the object values of each property
+			IRI property = st.getPredicate();
+			Value value = st.getObject();
+			if (value instanceof Literal) {
+				Literal literal = (Literal)value;
+				output += "datatype: " + literal.getDatatype() + "\n";
+				
+				// get the value of the literal directly as a Java primitive.
+				if (property.getLocalName().equals("peopleDepicted")) {
+					int peopleDepicted = literal.intValue();
+					output += peopleDepicted + " people are depicted in this painting" + "\n";
+				}
+				else if (property.getLocalName().equals("creationDate")) {
+					XMLGregorianCalendar calendar = literal.calendarValue();
+					Date date = calendar.toGregorianCalendar().getTime();
+					output += "The painting was created on " + date + "\n";
+				}
+
+		    // we want to see the object values of each statement
+				output += "language: " + literal.getLanguage().orElse("unknown");
+				output += " title: " + literal.getLabel() + "\n";
+			}
+		}
+    return output;
+	}
+
 }
