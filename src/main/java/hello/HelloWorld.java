@@ -11,6 +11,10 @@ public class HelloWorld {
     System.out.println(greeter.sayHello());
 
 //    System.out.println(greeter.example01_RDF4J());
-    System.out.println(greeter.example04_RDF4J());
+//    System.out.println(greeter.example02_RDF4J());
+//    System.out.println(greeter.example03_RDF4J());
+//    System.out.println(greeter.example04_RDF4J());
+//    System.out.println(greeter.example05_RDF4J());
+    System.out.println(greeter.example06_RDF4J());
   }
 }

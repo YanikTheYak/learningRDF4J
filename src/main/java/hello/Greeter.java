@@ -31,6 +31,15 @@ import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 // example 4
 import org.eclipse.rdf4j.model.vocabulary.DC;
 
+// example 5
+import org.eclipse.rdf4j.model.BNode;
+
+// example 6
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 /**
  * RDF Tutorial example 01: Building a simple RDF Model using Eclipse RDF4J
  *
@@ -72,10 +81,10 @@ public class Greeter {
     String output = "";
     ModelBuilder builder = new ModelBuilder();
     Model model = builder
-                  .setNamespace("ex", "http://example.org/")
+      	.setNamespace("ex", "http://example.org/")
 		  .subject("ex:Picasso")
-		       .add(RDF.TYPE, "ex:Artist")
-		       .add(FOAF.FIRST_NAME, "Pablo")
+				.add(RDF.TYPE, "ex:Artist")
+				.add(FOAF.FIRST_NAME, "Pablo")
 		  .build();
 
     for (Statement statement: model) {
@@ -87,8 +96,6 @@ public class Greeter {
 
   public String example03_RDF4J() {
     String output = "";
-
-
 		ValueFactory vf = SimpleValueFactory.getInstance();
 		
 		// Create a new RDF model containing information about the painting "The Potato Eaters"
@@ -134,8 +141,6 @@ public class Greeter {
 
  public String example04_RDF4J() {
     String output = "";
-
-
 		ValueFactory vf = SimpleValueFactory.getInstance();
 		
 		// Create a new RDF model containing information about the painting "The Potato Eaters"
@@ -143,20 +148,20 @@ public class Greeter {
 		Model model = builder
 				.setNamespace("ex", "http://example.org/")
 				.subject("ex:PotatoEaters")
-				// this painting was created on April 1, 1885
-				.add("ex:creationDate", vf.createLiteral("1885-04-01T00:00:00Z", XMLSchema.DATETIME))
-				// You can also pass in a Java Date object directly: 
-					//.add("ex:creationDate", new GregorianCalendar(1885, Calendar.APRIL, 1).getTime())
-				
-				// the painting shows 5 people
-				.add("ex:peopleDepicted", 5)
+					// this painting was created on April 1, 1885
+					.add("ex:creationDate", vf.createLiteral("1885-04-01T00:00:00Z", XMLSchema.DATETIME))
+					// You can also pass in a Java Date object directly: 
+						//.add("ex:creationDate", new GregorianCalendar(1885, Calendar.APRIL, 1).getTime())
+					
+					// the painting shows 5 people
+					.add("ex:peopleDepicted", 5)
 
-				// In English, this painting is called "The Potato Eaters"
-				.add(DC.TITLE, vf.createLiteral("The Potato Eaters", "en"))
-				// In Dutch, it's called "De Aardappeleters"
-				.add(DC.TITLE,  vf.createLiteral("De Aardappeleters", "nl"))
+					// In English, this painting is called "The Potato Eaters"
+					.add(DC.TITLE, vf.createLiteral("The Potato Eaters", "en"))
+					// In Dutch, it's called "De Aardappeleters"
+					.add(DC.TITLE,  vf.createLiteral("De Aardappeleters", "nl"))
 
-				.add(DC.TITLE, vf.createLiteral("Manger Pomme de terre", "fr"))
+					.add(DC.TITLE, vf.createLiteral("Manger Pomme de terre", "fr"))
 						
 				.build();
 
@@ -188,4 +193,81 @@ public class Greeter {
     return output;
 	}
 
+ public String example05_RDF4J() {
+    String output = "";
+		// To create a blank node for the address, we need a ValueFactory
+		ValueFactory vf = SimpleValueFactory.getInstance();
+		BNode address = vf.createBNode();
+
+		// First we do the same thing we did in example 02: create a new ModelBuilder, and add
+		// two statements about Picasso.
+		ModelBuilder builder = new ModelBuilder();
+		builder
+				.setNamespace("ex", "http://example.org/")
+				.subject("ex:Picasso")
+					.add(RDF.TYPE, "ex:Artist")
+					.add(FOAF.FIRST_NAME, "Pablo")
+				// this is where it becomes new: we add the address by linking the blank node
+				// to picasso via the `ex:homeAddress` property, and then adding facts _about_ the address
+					.add("ex:homeAddress", address) // link the blank node
+				.subject(address)			// switch the subject
+					.add("ex:street", "31 Art Gallery")
+					.add("ex:city", "Madrid")
+					.add("ex:country", "Spain");
+
+		Model model = builder.build();
+
+		// To see what's in our model, let's just print it to the screen
+		for(Statement st: model) {
+			output += st;
+		}
+	
+    return output;
+	}
+
+public String example06_RDF4J() {
+    String output;
+		// To create a blank node for the address, we need a ValueFactory
+		ValueFactory vf = SimpleValueFactory.getInstance();
+		BNode address = vf.createBNode();
+
+		// First we do the same thing we did in example 02: create a new ModelBuilder, and add
+		// two statements about Picasso.
+		ModelBuilder builder = new ModelBuilder();
+		builder
+				.setNamespace("ex", "http://example.org/")
+				.subject("ex:Picasso")
+					.add(RDF.TYPE, "ex:Artist")
+					.add(FOAF.FIRST_NAME, "Pablo")
+				// this is where it becomes new: we add the address by linking the blank node
+				// to picasso via the `ex:homeAddress` property, and then adding facts _about_ the address
+					.add("ex:homeAddress", address) // link the blank node
+				.subject(address)			// switch the subject
+					.add("ex:street", "31 Art Gallery")
+					.add("ex:city", "Madrid")
+					.add("ex:country", "Spain");
+
+		Model model = builder.build();
+
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		// Instead of simply printing the statements to the screen, we use a Rio writer to
+		// write the model in RDF/XML syntax:
+		Rio.write(model, os, RDFFormat.RDFXML);
+
+		// Note that instead of writing to the screen using `System.out` you could also provide
+		// a java.io.FileOutputStream or a java.io.FileWriter to save the model to a file
+		// or a byte array as implemented here
+
+		try {
+			//All your IO Operations
+			output = new String(os.toByteArray(),"UTF-8");
+		} catch(IOException ioe) {
+			//Handle exception here, most of the time you will just log it.
+			output = "IO exception :(";
+		}
+
+    return output;
+	}
 }
