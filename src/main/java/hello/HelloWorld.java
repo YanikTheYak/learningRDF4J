@@ -15,6 +15,8 @@ public class HelloWorld {
 //    System.out.println(greeter.example03_RDF4J());
 //    System.out.println(greeter.example04_RDF4J());
 //    System.out.println(greeter.example05_RDF4J());
-    System.out.println(greeter.example06_RDF4J());
+//    System.out.println(greeter.example06_RDF4J());
+//    System.out.println(greeter.example07_RDF4J());
+    System.out.println(greeter.example08_RDF4J());
   }
 }

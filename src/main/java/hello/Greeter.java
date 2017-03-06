@@ -40,6 +40,9 @@ import org.eclipse.rdf4j.rio.Rio;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+// example 8
+import java.io.InputStream;
+
 /**
  * RDF Tutorial example 01: Building a simple RDF Model using Eclipse RDF4J
  *
@@ -270,4 +273,86 @@ public String example06_RDF4J() {
 
     return output;
 	}
+
+public String example07_RDF4J() {
+    String output;
+		// To create a blank node for the address, we need a ValueFactory
+		ValueFactory vf = SimpleValueFactory.getInstance();
+		BNode address = vf.createBNode();
+
+		// First we do the same thing we did in example 02: create a new ModelBuilder, and add
+		// two statements about Picasso.
+		ModelBuilder builder = new ModelBuilder();
+		builder
+				.setNamespace("ex", "http://example.org/")
+				.subject("ex:Picasso")
+					.add(RDF.TYPE, "ex:Artist")
+					.add(FOAF.FIRST_NAME, "Pablo")
+				// this is where it becomes new: we add the address by linking the blank node
+				// to picasso via the `ex:homeAddress` property, and then adding facts _about_ the address
+					.add("ex:homeAddress", address) // link the blank node
+				.subject(address)			// switch the subject
+					.add("ex:street", "31 Art Gallery")
+					.add("ex:city", "Madrid")
+					.add("ex:country", "Spain");
+
+		Model model = builder.build();
+
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		// Instead of simply printing the statements to the screen, we use a Rio writer to
+		// write the model in RDF/XML syntax:
+		Rio.write(model, os, RDFFormat.TURTLE);
+
+		// Note that instead of writing to the screen using `System.out` you could also provide
+		// a java.io.FileOutputStream or a java.io.FileWriter to save the model to a file
+		// or a byte array as implemented here
+
+		try {
+			//All your IO Operations
+			output = new String(os.toByteArray(),"UTF-8");
+		} catch(IOException ioe) {
+			//Handle exception here, most of the time you will just log it.
+			output = "IO exception :(";
+		}
+
+    return output;
+	}
+
+public String example08_RDF4J() {
+    String output = "";
+		Model model = null;
+
+		String filename = "example-data-artists.ttl";
+
+		try {
+			//All your IO Operations
+
+			// read the file 'example-data-artists.ttl' as an InputStream.
+			InputStream input = Greeter.class.getResourceAsStream("/" + filename);
+
+			// Rio also accepts a java.io.Reader as input for the parser.
+			model = Rio.parse(input, "", RDFFormat.TURTLE);
+
+		} catch(IOException ioe) {
+			//Handle exception here, most of the time you will just log it.
+			output = "IO exception :(";
+		}
+
+		if (model != null)
+		{
+			// To check that we have correctly read the file, let's print out the model to the screen again
+			// To see what's in our model, let's just print it to the screen
+			for(Statement st: model) {
+				output += st;
+			}
+		}
+
+		return output;
+	}
+
+
+
+
 }
