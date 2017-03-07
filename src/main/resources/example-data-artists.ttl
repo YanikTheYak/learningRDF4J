@@ -14,16 +14,16 @@ ex:guernica a ex:Painting ;
             rdfs:label "Guernica";
             ex:technique "oil on canvas".
 
-ex:VanGogh a ex:Artist ;
+ex:vanGogh a ex:Artist ;
         	foaf:firstName "Vincent" ;
             foaf:surname "van Gogh";
-            ex:creatorOf ex:starryNight, ex:sunflowers, ex:potatoEaters .
+            ex:creatorOf ex:starryNight, ex:sunFlowers, ex:potatoEaters .
 
 ex:starryNight a ex:Painting ;
             ex:technique "oil on canvas";
             rdfs:label "Starry Night" .
 
-ex:sunflowers a ex:Painting ;
+ex:sunFlowers a ex:Painting ;
             ex:technique "oil on canvas";
             rdfs:label "Sunflowers" .
 
