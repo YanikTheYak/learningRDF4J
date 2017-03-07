@@ -352,6 +352,72 @@ public String example08_RDF4J() {
 		return output;
 	}
 
+	public String example09_RDF4J() {
+		String output = "";
+		Model model = null;
+
+		String filename = "example-data-artists.ttl";
+
+		try {
+			//All your IO Operations
+
+			// read the file 'example-data-artists.ttl' as an InputStream.
+			InputStream input = Greeter.class.getResourceAsStream("/" + filename);
+
+			// Rio also accepts a java.io.Reader as input for the parser.
+			model = Rio.parse(input, "", RDFFormat.TURTLE);
+
+		} catch(IOException ioe) {
+			//Handle exception here, most of the time you will just log it.
+			output = "IO exception :(";
+		}
+
+		if (model != null)
+		{
+			ValueFactory vf = SimpleValueFactory.getInstance();
+
+			// We want to find all information about the artist `ex:VanGogh`.
+			IRI vanGogh = vf.createIRI("http://example.org/VanGogh");
+
+			// By filtering on a specific subject we zoom in on the data that is about that subject.
+			// The filter method takes a subject, predicate, object (and optionally a named graph/context)
+			// argument. The more arguments we set to a value, the more specific the filter becomes.
+			Model aboutVanGogh = model.filter(vanGogh, null, null);
+
+			// Iterate over the statements that are about Van Gogh
+			for (Statement st: aboutVanGogh) {
+				// the subject will always be `ex:VanGogh`, an IRI, so we can safely cast it
+				IRI subject = (IRI)st.getSubject();
+				// the property predicate can be anything, but it's always an IRI
+				IRI predicate = st.getPredicate();
+
+				// the property value could be an IRI, a BNode, or a Literal. In RDF4J, Value is
+				// is the supertype of all possible kinds of RDF values.
+				Value object = st.getObject();
+
+				// let's print out the statement in a nice way. We ignore the namespaces and only print the
+				// local name of each IRI
+				output += subject.getLocalName() + " " + predicate.getLocalName() + " " + "\n";
+				if (object instanceof Literal) {
+					// it's a literal value. Let's print it out nicely, in quotes, and without any ugly
+					// datatype stuff
+					output += "\"" + ((Literal)object).getLabel() + "\"" + "\n";
+				}
+				else if (object instanceof  IRI) {
+					// it's an IRI. Just print out the local part (without the namespace)
+					output += ((IRI)object).getLocalName() + "\n";
+				}
+				else {
+					// it's a blank node. Just print it out as-is.
+					output += object + "\n";
+				}
+			}
+
+
+		}
+
+		return output;
+	}
 
 
 
